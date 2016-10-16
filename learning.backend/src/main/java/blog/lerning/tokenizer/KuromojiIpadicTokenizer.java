@@ -11,13 +11,13 @@ import java.util.List;
  * @author mao.instantlife at gmail.com
  */
 public class KuromojiIpadicTokenizer implements Tokenizer {
+    private static com.atilika.kuromoji.ipadic.Tokenizer KUROMOJI_TOKENIZER = new com.atilika.kuromoji.ipadic.Tokenizer();
     private List<Token> tokens;
     private int index;
     private TokenPreProcess preProcess;
 
     public KuromojiIpadicTokenizer(String toTokenize) {
-        com.atilika.kuromoji.ipadic.Tokenizer tokenizer = new com.atilika.kuromoji.ipadic.Tokenizer();
-        tokens = tokenizer.tokenize(toTokenize);
+        tokens = KUROMOJI_TOKENIZER.tokenize(toTokenize);
         index = tokens.isEmpty() ?  -1:0;
     }
 

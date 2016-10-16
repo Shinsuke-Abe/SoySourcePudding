@@ -15,21 +15,24 @@ import java.io.IOException;
  * @author mao.instantlife at gmail.com
  */
 public class Application {
-    public static void main(String[] args) throws IOException {
-        MTTypeCleanser cleanser = new MTTypeCleanser("/Users/mao/Documents/SoySourcePudding/src/main/resources/mao-instantlife.hatenablog.com.export.txt");
+    private static String LEARNING_BASE_DIR = "/opt/learning/";
+
+    public static void main(String[] args) throws Exception {
+        if(args.length <= 0) {
+            throw new Exception("コーパスファイル名を指定してください。");
+        }
+        String inputFileName = LEARNING_BASE_DIR + "input/" + args[0];
+        MTTypeCleanser cleanser = new MTTypeCleanser(inputFileName);
         SentenceIterator iter = new BasicLineIterator(cleanser.run());
 
         final EndingPreProcessor preProcessor = new EndingPreProcessor();
         KuromojiIpadicTokenizerFactory tokenizer = new KuromojiIpadicTokenizerFactory();
 
-        tokenizer.setTokenPreProcessor(new TokenPreProcess() {
-            @Override
-            public String preProcess(String token) {
-                token = token.toLowerCase();
-                String base = preProcessor.preProcess(token);
-                base = base.replaceAll("\\d", "__NUMBER__");
-                return base;
-            }
+        tokenizer.setTokenPreProcessor(token -> {
+            token = token.toLowerCase();
+            String base = preProcessor.preProcess(token);
+            base = base.replaceAll("\\d", "__NUMBER__");
+            return base;
         });
 
         int batchSize = 1000;
@@ -53,7 +56,7 @@ public class Application {
                 .build();
         vec.fit();
 
-
-        WordVectorSerializer.writeWordVectors(vec, "/Users/mao/Documents/SoySourcePudding/src/main/resources/model-wordvectors.txt");
+        String modelFileName = LEARNING_BASE_DIR + "model/model-wordvectors.txt";
+        WordVectorSerializer.writeWordVectors(vec, modelFileName);
     }
 }
