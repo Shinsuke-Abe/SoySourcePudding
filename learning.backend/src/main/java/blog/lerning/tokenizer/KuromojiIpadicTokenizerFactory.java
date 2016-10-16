@@ -4,6 +4,7 @@ import org.deeplearning4j.text.tokenization.tokenizer.TokenPreProcess;
 import org.deeplearning4j.text.tokenization.tokenizer.Tokenizer;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -18,7 +19,12 @@ public class KuromojiIpadicTokenizerFactory implements TokenizerFactory {
             throw new IllegalArgumentException("Unable to proceed; no sentense to tokenize");
         }
 
-        KuromojiIpadicTokenizer ret = new KuromojiIpadicTokenizer(toTokenize);
+        KuromojiIpadicTokenizer ret;
+        try {
+            ret = new KuromojiIpadicTokenizer(toTokenize);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         ret.setTokenPreProcessor(preProcess);
         return ret;
     }

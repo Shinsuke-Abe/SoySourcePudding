@@ -4,8 +4,16 @@ import com.atilika.kuromoji.ipadic.Token;
 import org.deeplearning4j.text.tokenization.tokenizer.TokenPreProcess;
 import org.deeplearning4j.text.tokenization.tokenizer.Tokenizer;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static soysourcepudding.Commons.FULL_TOKEN_FILE;
+import static soysourcepudding.Commons.UNUSABLE_SPEECHLEVEL;
 
 /**
  * @author mao.instantlife at gmail.com
@@ -16,8 +24,16 @@ public class KuromojiIpadicTokenizer implements Tokenizer {
     private int index;
     private TokenPreProcess preProcess;
 
-    public KuromojiIpadicTokenizer(String toTokenize) {
+    public KuromojiIpadicTokenizer(String toTokenize) throws IOException {
         tokens = KUROMOJI_TOKENIZER.tokenize(toTokenize);
+        Files.write(
+                Paths.get(FULL_TOKEN_FILE.toURI()),
+                tokens.stream()
+                        .filter(t -> !(UNUSABLE_SPEECHLEVEL.contains(t.getPartOfSpeechLevel1())))
+                        .filter(t -> !(t.getPartOfSpeechLevel1().equals("動詞") && t.getSurface().length() == 1))
+                        .map(t -> t.getSurface())
+                        .collect(Collectors.toList()),
+                StandardOpenOption.APPEND);
         index = tokens.isEmpty() ?  -1:0;
     }
 
