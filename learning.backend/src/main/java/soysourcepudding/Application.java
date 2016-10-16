@@ -10,6 +10,11 @@ import org.deeplearning4j.text.tokenization.tokenizer.TokenPreProcess;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.EndingPreProcessor;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author mao.instantlife at gmail.com
@@ -58,5 +63,17 @@ public class Application {
 
         String modelFileName = LEARNING_BASE_DIR + "model/model-wordvectors.txt";
         WordVectorSerializer.writeWordVectors(vec, modelFileName);
+
+        // トークンモデル
+        try(Stream<String> a = Files.lines(Paths.get(Commons.FULL_TOKEN_FILE.toURI()))) {
+            Files.write(
+                    Paths.get(LEARNING_BASE_DIR + "model/model-tokenrank.csv"),
+                    a.collect(Collectors.groupingBy(t -> t, Collectors.counting())).entrySet().stream()
+                            .map(e -> e.getKey() + "," + e.getValue().toString())
+                            .collect(Collectors.toList()),
+                    StandardOpenOption.APPEND);
+        } catch(IOException e) {
+            throw e;
+        }
     }
 }
