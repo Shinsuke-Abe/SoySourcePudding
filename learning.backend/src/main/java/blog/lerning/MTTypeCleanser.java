@@ -1,11 +1,13 @@
 package blog.lerning;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -42,21 +44,13 @@ public class MTTypeCleanser {
         try(Stream<String> a = Files.lines(Paths.get(fileName))) {
             File tempFile = File.createTempFile("temporary.blog.text", ".txt");
 
-            FileWriter fw = new FileWriter(tempFile);
-            FileOutputStream fo = new FileOutputStream(tempFile);
-            BufferedOutputStream bo = new BufferedOutputStream(fo);
-
-            a.map(line -> extractTitleString(line).replaceAll(TAG_PARSE_PATTERN, "").trim())
-                    .filter(line -> isUnnecessaryLine(line) == false)
-                    .forEach(line -> {
-                        try {
-                            fw.write(line + "\n");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-
-            fw.flush();
+            Files.write(
+                    Paths.get(tempFile.toURI()),
+                    a.map(line -> extractTitleString(line).replaceAll(TAG_PARSE_PATTERN, "").trim())
+                            .filter(line -> isUnnecessaryLine(line) == false)
+                            .collect(Collectors.toList()),
+                    StandardOpenOption.APPEND
+            );
 
             return tempFile;
         } catch(IOException e) {
