@@ -66,6 +66,11 @@ public class Application {
 
         // トークンモデル
         try(Stream<String> a = Files.lines(Paths.get(Commons.FULL_TOKEN_FILE.toURI()))) {
+            String tokenRankFileName = LEARNING_BASE_DIR + "model/model-tokenrank.csv";
+
+            Files.deleteIfExists(Paths.get(tokenRankFileName));
+            Files.createFile(Paths.get(tokenRankFileName));
+
             Files.write(
                     Paths.get(LEARNING_BASE_DIR + "model/model-tokenrank.csv"),
                     a.collect(Collectors.groupingBy(t -> t, Collectors.counting())).entrySet().stream()
