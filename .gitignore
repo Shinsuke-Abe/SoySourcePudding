@@ -5,4 +5,5 @@ localdata/
 .gradle/
 .project
 .classpath
-.settings
+.settings*/pom.xml
+learning.backend/pom.xml
